@@ -1,4 +1,4 @@
-﻿namespace BangumiRSSAggregator.Models;
+﻿namespace BangumiRSSAggregator.Server.Models;
 
 public class SourceGroup
 {

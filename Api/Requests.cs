@@ -1,3 +1,3 @@
-﻿namespace BangumiRSSAggregator.Api;
+﻿namespace BangumiRSSAggregator.Server.Api;
 
 public record FeedTestRuleRequest(string Pattern, string Replacement);

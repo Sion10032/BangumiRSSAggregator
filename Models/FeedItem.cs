@@ -1,4 +1,4 @@
-﻿namespace BangumiRSSAggregator.Models;
+﻿namespace BangumiRSSAggregator.Server.Models;
 
 /// <summary>
 /// 从订阅源获取到的数据

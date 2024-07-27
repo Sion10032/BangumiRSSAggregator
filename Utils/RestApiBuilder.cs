@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BangumiRSSAggregator.Utils;
+namespace BangumiRSSAggregator.Server.Utils;
 
 public class RestApiBuilder<TEntity, TKey, TDbContext>
     where TEntity : class

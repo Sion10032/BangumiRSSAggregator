@@ -6,21 +6,16 @@
  * 5. 订阅该程序生成的RSS源。
  */
 
-using BangumiRSSAggregator;
-using BangumiRSSAggregator.Api;
-using BangumiRSSAggregator.Components;
-using BangumiRSSAggregator.Models;
-using BangumiRSSAggregator.Utils;
+using BangumiRSSAggregator.Server;
+using BangumiRSSAggregator.Server.Models;
+using BangumiRSSAggregator.Server.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services
-    .AddRazorComponents()
-    .AddInteractiveServerComponents();
 
 builder.Services.AddDbContext<BangumiDb>(options => options.UseSqlite(@"Data Source=.\db.sqlite"));
 builder.Services.AddScoped<RSSUpdater>();
@@ -51,11 +46,6 @@ apiGroup.MapGroup("/feed-items")
 apiGroup.MapGroup("/bangumi/groups")
     .MapSimpleRestApi<FeedGroup, string, BangumiDb>();
 
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
 //apiGroup.MapGroup("/feeds")
 //    .MapFeedApis();
 

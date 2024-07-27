@@ -10,17 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Components\Layout\MainLayout.razor.css" />
-    <None Remove="Components\Layout\NavMenu.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Components\Layout\MainLayout.razor.css" />
-    <Content Include="Components\Layout\NavMenu.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

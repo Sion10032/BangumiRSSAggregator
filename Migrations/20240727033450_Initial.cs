@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace BangumiRSSAggregator.Migrations
+namespace BangumiRSSAggregator.Server.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

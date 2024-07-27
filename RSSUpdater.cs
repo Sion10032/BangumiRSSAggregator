@@ -1,12 +1,12 @@
 ﻿using System.Net.Http;
-using BangumiRSSAggregator.Models;
 using System.Text.RegularExpressions;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
-using BangumiRSSAggregator.Utils;
-using BangumiRSSAggregator.Api;
+using BangumiRSSAggregator.Server.Models;
+using BangumiRSSAggregator.Server.Utils;
+using BangumiRSSAggregator.Server.Api;
 
-namespace BangumiRSSAggregator;
+namespace BangumiRSSAggregator.Server;
 
 public class RSSUpdater
 {
@@ -38,7 +38,7 @@ public class RSSUpdater
         }
     }
 
-    public async Task<(FeedSource Feed, IReadOnlyList<FeedItem> Items)> FetchFeed(int feedId)
+    public async Task<(FeedSource? Feed, IReadOnlyList<FeedItem> Items)> FetchFeed(int feedId)
     {
         var source = await _context.FeedSources.FindAsync(feedId);
         if (source == null)

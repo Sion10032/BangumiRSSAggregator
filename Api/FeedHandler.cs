@@ -1,9 +1,8 @@
-﻿
-using BangumiRSSAggregator.Models;
+﻿using BangumiRSSAggregator.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BangumiRSSAggregator.Api;
+namespace BangumiRSSAggregator.Server.Api;
 
 public static class FeedHandler
 {

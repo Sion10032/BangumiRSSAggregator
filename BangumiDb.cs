@@ -1,7 +1,7 @@
-﻿using BangumiRSSAggregator.Models;
+﻿using BangumiRSSAggregator.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BangumiRSSAggregator;
+namespace BangumiRSSAggregator.Server;
 
 /*
  *      [EnabledRule]

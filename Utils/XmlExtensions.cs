@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace BangumiRSSAggregator.Utils;
+namespace BangumiRSSAggregator.Server.Utils;
 
 public static class XmlExtensions
 {

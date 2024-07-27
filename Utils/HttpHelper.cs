@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace BangumiRSSAggregator.Utils;
+namespace BangumiRSSAggregator.Server.Utils;
 
 public static class HttpHelper
 {
