@@ -1,0 +1,48 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Client",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/BangumiRSSAggregator.Client/",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "serverReadyAction":{
+                "action": "debugWithChrome",
+                "pattern": "http://localhost.*?([1-9][0-9]+)",
+                "uriFormat": "http://localhost:%s",
+                "webRoot": "${workspaceFolder}/BangumiRSSAggregator.Client/src",
+                "killOnServerStop": true,
+            }
+        },
+        {
+            "name": "Server",
+            "type": "coreclr",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/BangumiRSSAggregator.Server/",
+            "program": "${workspaceFolder}/BangumiRSSAggregator.Server/bin/Debug/net8.0/BangumiRSSAggregator.Server.dll",
+            "launchSettingsProfile": "http",
+            "preLaunchTask": "build",
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Server/Client",
+            "configurations": [
+                "Server",
+                "Client"
+            ],
+            "stopAll": true,
+        }
+    ]
+}
