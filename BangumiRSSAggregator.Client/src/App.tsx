@@ -4,11 +4,10 @@ import { Col, Row } from 'antd';
 import { Card } from 'antd';
 import 'antd/dist/reset.css';
 
-//import reactLogo from './assets/react.svg';
-//import viteLogo from '/vite.svg';
 import '@/App.css';
 import Feeds from "@/components/feeds/Feeds";
 import Rules from "./components/rules/Rules";
+import Groups from "./components/groups/Groups";
 
 
 const { Title } = Typography;
@@ -32,8 +31,7 @@ function App() {
             <Rules/>
           </Col>
           <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-            <Card title="Groups" className="flexible-card">
-            </Card>
+            <Groups/>
           </Col>
         </Row>
         <Divider/>

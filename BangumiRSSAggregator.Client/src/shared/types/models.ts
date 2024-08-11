@@ -14,6 +14,7 @@ export type FeedItem = {
 export type BangumiGroup = {
   id: number;
   name: string;
+  enabled: boolean;
 };
 
 export type FeedRule = {

@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import ResizeObserver from 'rc-resize-observer';
 import { Table, TableProps } from 'antd';
+import { cloneAndUpdateProperty } from '@/shared/utils';
 
-type Props<T = any> = Omit<TableProps<T>, "rowKey" | "rowSelection"> & {
+import "./AutoHeightTable.css";
+
+type Props<T = any> = Omit<TableProps<T>, "rowKey" | "rowSelection" | "style"> & {
   offset?: number;
   headerHeight?: number;
+  style?: React.CSSProperties
   keySelector: (obj : T) => React.Key;
   onSelectionChanged? : (keys : React.Key[]) => Promise<void>;
 };
 
 type TableRowSelection<T> = TableProps<T>['rowSelection'];
 
-function AutoHeightTable<T = any>({ offset, headerHeight, keySelector, onSelectionChanged, ...props }: Props) {
-  const [tableHeight, setTableHeight] = useState(0);
+function AutoHeightTable<T = any>({ offset, headerHeight, style, keySelector, onSelectionChanged, ...props }: Props) {
+  const [ tableHeight, setTableHeight] = useState(0);
   const OnTableResized = (sizeInfo: { width: number, height: number }) => {
+    console.log(sizeInfo);
     setTableHeight(sizeInfo.height - (headerHeight ?? 32) - (offset ?? 8));
   };
-  const { style, ...otherProps } = props;
-  const newStyle = { ...style };
-  newStyle.height = '100%';
 
   const [ selectedRowKeys, setSelectedRowKeys ] = useState<React.Key[]>([]);
   const updateSelectedRowKeys = (keys : React.Key[]) => {
@@ -45,7 +47,7 @@ function AutoHeightTable<T = any>({ offset, headerHeight, keySelector, onSelecti
   return (
     <ResizeObserver onResize={OnTableResized}>
       <Table
-        style={newStyle}
+        style={cloneAndUpdateProperty(style ?? {}, "height", "100%")}
         scroll={{ y: tableHeight }}
         rowKey={keySelector}
         rowSelection={rowSelection}
@@ -54,7 +56,7 @@ function AutoHeightTable<T = any>({ offset, headerHeight, keySelector, onSelecti
             selectRow(record);
           }
         })}
-        {...otherProps}/>
+        {...props}/>
     </ResizeObserver>
   );
 }
