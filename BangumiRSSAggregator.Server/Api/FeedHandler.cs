@@ -40,7 +40,7 @@ public static class FeedHandler
             .Grouping(
                 feedItems,
                 [
-                    new FeedRule { Pattern = testRule.Pattern, Map = testRule.Replacement }
+                    new FeedRule { Pattern = testRule.Pattern, Replacement = testRule.Replacement }
                 ])
             .ToDictionary(
                 it => it.Key,

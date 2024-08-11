@@ -8,6 +8,7 @@ import 'antd/dist/reset.css';
 //import viteLogo from '/vite.svg';
 import '@/App.css';
 import Feeds from "@/components/feeds/Feeds";
+import Rules from "./components/rules/Rules";
 
 
 const { Title } = Typography;
@@ -28,8 +29,7 @@ function App() {
             <Feeds/>
           </Col>
           <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-            <Card title="Rules" className="flexible-card">
-            </Card>
+            <Rules/>
           </Col>
           <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <Card title="Groups" className="flexible-card">

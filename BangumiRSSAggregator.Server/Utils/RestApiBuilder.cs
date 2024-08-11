@@ -63,6 +63,7 @@ public class RestApiBuilder<TEntity, TKey, TDbContext>
             var properties = typeof(TEntity).GetProperties()
                 .Where(it => it.CanWrite)
                 .Where(it => it.PropertyType.IsValueType || it.PropertyType == typeof(string))
+                .Where(it => it.Name != "Id") // todo 更加合理的过滤主键的方法
                 .ToList();
             foreach (var property in properties)
             {

@@ -137,7 +137,7 @@ public class RSSUpdater
                 continue;
             }
 
-            var groupName = Regex.Replace(item.Name, bestRule.Rule.Pattern, bestRule.Rule.Map);
+            var groupName = Regex.Replace(item.Name, bestRule.Rule.Pattern, bestRule.Rule.Replacement);
             if (!processedItems.TryGetValue(groupName, out var group))
             {
                 group = new List<(FeedItem FeedItem, FeedRule Rule)>();

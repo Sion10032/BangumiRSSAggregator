@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import ResizeObserver from 'rc-resize-observer';
 import { Table, TableProps } from 'antd';
 
@@ -21,14 +21,15 @@ function AutoHeightTable<T = any>({ offset, headerHeight, keySelector, onSelecti
   newStyle.height = '100%';
 
   const [ selectedRowKeys, setSelectedRowKeys ] = useState<React.Key[]>([]);
+  const updateSelectedRowKeys = (keys : React.Key[]) => {
+    setSelectedRowKeys(keys);
+    console.log('selectedRowKeys changed: ', keys);
+    onSelectionChanged?.(keys);
+  };
   const rowSelection: TableRowSelection<T> = {
     type: "radio",
     selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-      console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-      onSelectionChanged?.(newSelectedRowKeys);
-    },
+    onChange: updateSelectedRowKeys,
   };
   const selectRow = (record : T) => {
     const newSelectedRowKeys = [...selectedRowKeys];
@@ -38,7 +39,7 @@ function AutoHeightTable<T = any>({ offset, headerHeight, keySelector, onSelecti
     } else {
       newSelectedRowKeys.push(recordKey);
     }
-    setSelectedRowKeys(newSelectedRowKeys);
+    updateSelectedRowKeys(newSelectedRowKeys);
   };
 
   return (
