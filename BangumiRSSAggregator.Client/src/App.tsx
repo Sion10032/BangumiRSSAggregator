@@ -14,14 +14,6 @@ const { Title } = Typography;
 const { Header, /*Footer,*/ Content } = Layout;
 
 function App() {
-  const feeds = Array(10).fill(0).map((_, index) => {
-    return {
-      id: index,
-      name: `Feed${index}`,
-      url: `http://Feed${index}`,
-      updateInterval: 15,
-    }
-  });
   return (
     <Layout>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
@@ -33,7 +25,7 @@ function App() {
           justify="space-around" 
           style={{ padding: '8px' }}>
           <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
-            <Feeds feeds={feeds}/>
+            <Feeds/>
           </Col>
           <Col xs={24} sm={24} md={24} lg={8} xl={8} xxl={8}>
             <Card title="Rules" className="flexible-card">

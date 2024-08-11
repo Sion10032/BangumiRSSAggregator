@@ -1,9 +1,9 @@
-/* ´¦ÀíÁ÷³Ì£º
- * 1. Ìí¼ÓRSS¶©ÔÄ£»
- * 2. Ìí¼ÓÕıÔò¹æÔò£»
- * 3. ÎªRSSÔ´ÆôÓÃ¹æÔò£¬Éú³É·Ö×é£»
- * 4. ¹´Ñ¡ĞèÒªµÄ·Ö×é£»
- * 5. ¶©ÔÄ¸Ã³ÌĞòÉú³ÉµÄRSSÔ´¡£
+/* å¤„ç†æµç¨‹ï¼š
+ * 1. æ·»åŠ RSSè®¢é˜…ï¼›
+ * 2. æ·»åŠ æ­£åˆ™è§„åˆ™ï¼›
+ * 3. ä¸ºRSSæºå¯ç”¨è§„åˆ™ï¼Œç”Ÿæˆåˆ†ç»„ï¼›
+ * 4. å‹¾é€‰éœ€è¦çš„åˆ†ç»„ï¼›
+ * 5. è®¢é˜…è¯¥ç¨‹åºç”Ÿæˆçš„RSSæºã€‚
  */
 
 using BangumiRSSAggregator.Server;
@@ -43,7 +43,7 @@ var apiGroup = app.MapGroup("/api");
 apiGroup.MapGroup("/rules")
     .MapSimpleRestApi<FeedRule, int, BangumiDb>();
 apiGroup.MapGroup("/feeds")
-    .MapSimpleRestApi<FeedSource, string, BangumiDb>();
+    .MapSimpleRestApi<FeedSource, int, BangumiDb>();
 apiGroup.MapGet(
     "/feeds/{id}/fetch_and_update", 
     ([FromRoute] int id, [FromServices] RSSUpdater updater) => updater.FetchAndUpdate(id));
@@ -53,7 +53,7 @@ apiGroup.MapGet(
 apiGroup.MapGroup("/feed-items")
     .MapSimpleRestApi<FeedItem, string, BangumiDb>();
 apiGroup.MapGroup("/bangumi/groups")
-    .MapSimpleRestApi<FeedGroup, string, BangumiDb>();
+    .MapSimpleRestApi<FeedGroup, int, BangumiDb>();
 
 //apiGroup.MapGroup("/feeds")
 //    .MapFeedApis();
