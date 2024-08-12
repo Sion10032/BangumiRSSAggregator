@@ -1,13 +1,13 @@
 //import { useState } from 'react';
 import { Divider, Layout, Typography } from "antd";
 import { Col, Row } from 'antd';
-import { Card } from 'antd';
 import 'antd/dist/reset.css';
 
 import '@/App.css';
 import Feeds from "@/components/feeds/Feeds";
 import Rules from "./components/rules/Rules";
 import Groups from "./components/groups/Groups";
+import Animes from "./components/animes/Animes";
 
 
 const { Title } = Typography;
@@ -17,7 +17,7 @@ function App() {
   return (
     <Layout>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <Title level={2} style={{ color: "white" }}>Bangumi RSS Aggregator</Title>
+        <Title level={2} style={{ color: "white", margin: '0px' }}>Bangumi RSS Aggregator</Title>
       </Header>
       <Content>
         <Row 
@@ -37,8 +37,7 @@ function App() {
         <Divider/>
         <Row gutter={[8, 8]} style={{ padding: '8px' }}>
           <Col span={24}>
-            <Card title="Animes" className="flexible-card">
-            </Card>
+            <Animes/>
           </Col>
         </Row>
       </Content>

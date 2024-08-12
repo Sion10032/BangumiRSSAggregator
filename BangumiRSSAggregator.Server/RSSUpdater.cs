@@ -53,6 +53,7 @@ public class RSSUpdater
             .Select(it => it.Id)
             .ToHashSet();
         var newItems = items.Where(it => !existsId.Contains(it.Id)).ToList();
+        newItems.ForEach(it => it.FeedSourceId = feedId);
 
         // save new items
         await _context.FeedItems.AddRangeAsync(newItems);

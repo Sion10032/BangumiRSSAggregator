@@ -8,13 +8,26 @@ public static class FeedHandler
 {
     public static RouteGroupBuilder MapFeedApis(this RouteGroupBuilder group)
     {
-        group.MapGet("/{id}/fetch_and_update", FetchAndUpdateFeed);
         group.MapGet("/meta", GetFeedInfo);
+        group.MapGet("/{id}/fetch", Fetch);
+        group.MapGet("/{id}/fetch_and_update", FetchAndUpdateFeed);
         group.MapPost("/{id}/test-rule", TestFeedRule);
 
-        //group.MapGet("/{id}", GetFeed);
-
         return group;
+    }
+
+    private static Task<FeedInfoResponse> GetFeedInfo(
+        [FromQuery] string url)
+    {
+        return RSSUpdater.GetFeedInfo(url);
+    }
+
+    private static async Task<bool> Fetch(
+        [FromRoute] int id,
+        [FromServices] RSSUpdater updater)
+    {
+        var result = await updater.FetchFeed(id);
+        return result.Feed != null;
     }
 
     private static Task<bool> FetchAndUpdateFeed(
@@ -22,12 +35,6 @@ public static class FeedHandler
         [FromServices] RSSUpdater updater)
     {
         return updater.FetchAndUpdate(id);
-    }
-
-    private static Task<FeedInfoResponse> GetFeedInfo(
-        [FromQuery] string url)
-    {
-        return RSSUpdater.GetFeedInfo(url);
     }
 
     private static async Task<Dictionary<string, List<FeedItem>>> TestFeedRule(

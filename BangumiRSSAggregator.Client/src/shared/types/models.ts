@@ -23,4 +23,6 @@ export type FeedRule = {
   replacement: string;
 };
 
-export type BangumiItem = FeedItem;
+export type BangumiItem = FeedItem & {
+  groupId : number;
+};
