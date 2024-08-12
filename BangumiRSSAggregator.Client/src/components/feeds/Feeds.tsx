@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Card, message } from 'antd';
-import { MdAdd, MdDelete, MdEdit, MdRefresh } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit, MdRefresh, MdScience } from "react-icons/md";
 
 import type { TableColumnsType } from 'antd';
 import type { FeedSource } from '@/shared/types/models';
@@ -9,6 +9,7 @@ import AutoHeightTable from '../AutoHeightTable'
 import AddFeedFormModal from './EditFeed';
 import { getRestClient } from '@/shared/rest-client';
 import client from '@/shared/client';
+import { TestRuleModal } from './TestRule';
 
 function Feeds() {
   const [ messageApi, contextHolder ] = message.useMessage();
@@ -22,9 +23,9 @@ function Feeds() {
     setFeeds(await restClient.getAll());
   };
 
-  const [ isOpen, setIsOpen ] = useState(false);
+  const [ isEditModalOpen, setIsEditModalOpen ] = useState(false);
   const openEditModal = () => {
-    setIsOpen(true);
+    setIsEditModalOpen(true);
   };
   const deleteFeed = async () => {
     if (selectedRowKeys.current.length <= 0) {
@@ -57,14 +58,29 @@ function Feeds() {
   const onAddConfirm = async (value : FeedSource) => {
     if (await restClient.add(value)) {
       messageApi.success("add feed success.");
-      setIsOpen(false);
+      setIsEditModalOpen(false);
       setRefreshData(!refreshData);
     }
     else {
       messageApi.warning("add feed failed");
     }
   };
-  const onAddCancel = async () => setIsOpen(false);
+  const onAddCancel = async () => setIsEditModalOpen(false);
+
+  const [ isTestRuleModalOpen, setIsTestRuleModalOpen ] = useState(false);
+  const [ feedIdForTestRule, setFeedIdForTestRule ] = useState(0);
+  const openTestRuleModal = () => {
+    if (selectedRowKeys.current.length <= 0) {
+      return;
+    }
+    const key = selectedRowKeys.current[0];
+    if (typeof key !== "number") {
+      return;
+    }
+
+    setFeedIdForTestRule(key);
+    setIsTestRuleModalOpen(true);
+  };
 
   useEffect(
     () => {
@@ -91,6 +107,7 @@ function Feeds() {
           <MdEdit />,
           <MdDelete onClick={deleteFeed}/>,
           <MdRefresh onClick={fetchFeed}/>,
+          <MdScience onClick={openTestRuleModal}/>,
         ]}>
         <AutoHeightTable
           offset={8}
@@ -102,9 +119,12 @@ function Feeds() {
           pagination={false}>
         </AutoHeightTable>
         <AddFeedFormModal
-          isOpen={isOpen}
+          isOpen={isEditModalOpen}
           onConfirm={onAddConfirm}
           onCancel={onAddCancel}/>
+        <TestRuleModal 
+          isOpen={isTestRuleModalOpen}
+          sourceId={feedIdForTestRule}/>
       </Card>
     </>
   );

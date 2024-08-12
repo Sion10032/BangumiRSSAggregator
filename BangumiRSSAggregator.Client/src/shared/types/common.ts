@@ -14,3 +14,7 @@ export type FormModalDefaultProps<T extends object> = {
   onConfirm : (value : T) => Promise<void>;
   onCancel : () => Promise<void>;
 };
+
+export type Dict<TKey extends keyof any, TValue> = {
+  [ key in TKey ] : TValue;
+};

@@ -10,7 +10,7 @@ public static class FeedHandler
     {
         group.MapGet("/meta", GetFeedInfo);
         group.MapGet("/{id}/fetch", Fetch);
-        group.MapGet("/{id}/fetch_and_update", FetchAndUpdateFeed);
+        group.MapGet("/{id}/fetch-and-update", FetchAndUpdateFeed);
         group.MapPost("/{id}/test-rule", TestFeedRule);
 
         return group;
@@ -38,7 +38,7 @@ public static class FeedHandler
     }
 
     private static async Task<Dictionary<string, List<FeedItem>>> TestFeedRule(
-        [FromQuery] int id,
+        [FromRoute] int id,
         [FromBody] FeedTestRuleRequest testRule,
         [FromServices] BangumiDb db)
     {
