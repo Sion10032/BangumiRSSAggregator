@@ -6,3 +6,8 @@ export type FeedTestRuleRequest = {
 export type UpdateGroupStatusRequest = {
   groupIds : number[];
 };
+
+export type UpdateRulesForFeedRequest = {
+  feedId : number;
+  ruleIds : number[];
+};

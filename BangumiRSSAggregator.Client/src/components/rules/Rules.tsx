@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Card, message } from 'antd';
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit, MdPlayArrow, MdPlayDisabled } from "react-icons/md";
 
 import type { TableColumnsType } from 'antd';
 import type { FeedRule } from '@/shared/types/models';
@@ -8,6 +8,8 @@ import type { FeedRule } from '@/shared/types/models';
 import AutoHeightTable from '../AutoHeightTable'
 import AddRuleFormModal from './EditRule';
 import { getRestClient } from '@/shared/rest-client';
+import client from '@/shared/client';
+import { UpdateRulesForFeedRequest } from '@/shared/types/requests';
 
 function Rules() {
   const [ messageApi, contextHolder ] = message.useMessage();
@@ -37,6 +39,15 @@ function Rules() {
     }
     setRefreshData(!refreshData);
   };
+  const updateStatusForSelectedRules = async (status : boolean) => {
+    const path = `feed-rules/${status ? "enable" : "disable"}`;
+    const param : UpdateRulesForFeedRequest = {
+      feedId: 0,
+      ruleIds: selectedRowKeys.current as number[], 
+    };
+    await client.post(path, { json: param })
+  };
+  
   const onAddConfirm = async (value : FeedRule) => {
     if (await restClient.add(value)) {
       messageApi.success("add rule success.");
@@ -77,6 +88,8 @@ function Rules() {
           <MdAdd onClick={openEditItemModal}/>,
           <MdEdit />,
           <MdDelete onClick={deleteItem}/>,
+          <MdPlayArrow onClick={() => updateStatusForSelectedRules(true)} />,
+          <MdPlayDisabled onClick={() => updateStatusForSelectedRules(false)} />,
         ]}>
         <AutoHeightTable
           offset={8}

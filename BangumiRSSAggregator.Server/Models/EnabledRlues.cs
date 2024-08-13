@@ -2,7 +2,6 @@
 
 public class EnabledRule
 {
-    public int Id { get; set; }
     public int FeedRuleId { get; set; }
     public int FeedSourceId { get; set; }
 

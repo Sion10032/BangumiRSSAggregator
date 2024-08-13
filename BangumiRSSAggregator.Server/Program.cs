@@ -40,12 +40,14 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "Hello World!");
 
 var apiGroup = app.MapGroup("/api");
-apiGroup.MapGroup("/rules")
-    .MapSimpleRestApi<FeedRule, int, BangumiDb>();
 apiGroup.MapGroup("/feeds")
     .MapSimpleRestApi<FeedSource, int, BangumiDb>();
 apiGroup.MapGroup("/feeds")
     .MapFeedApis();
+apiGroup.MapGroup("/rules")
+    .MapSimpleRestApi<FeedRule, int, BangumiDb>();
+apiGroup.MapGroup("/feed-rules")
+    .MapFeedRuleApis();
 apiGroup.MapGroup("/feed-items")
     .MapSimpleRestApi<FeedItem, string, BangumiDb>();
 apiGroup.MapGroup("/bangumi/groups")

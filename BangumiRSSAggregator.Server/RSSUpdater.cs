@@ -17,18 +17,21 @@ public class RSSUpdater
         _context = context;
     }
 
-    #region 主要逻辑：拉取、从规则生成分组、生成BangumiItem
+    #region WebApi
+    /// <summary>
+    /// 拉取FeedSourceId，将拉取的FeedItem存储到数据库，并应用已经启用的Rule生成相应的BangumiItem
+    /// </summary>
+    /// <param name="sourceId"></param>
+    /// <returns></returns>
     public async Task<bool> FetchAndUpdate(int sourceId)
     {
         try
         {
             var (_, newItems) = await FetchFeed(sourceId);
 
-            var rules = await GetRulesByFeedId(sourceId);
+            var rules = await GetRulesByFeedIdFromDb(sourceId);
 
-            var processedItems = Grouping(newItems, rules);
-
-            await ApplyGroups(sourceId, processedItems);
+            await ApplyRulesForItems(sourceId, newItems, rules);
 
             return true;
         }
@@ -38,6 +41,11 @@ public class RSSUpdater
         }
     }
 
+    /// <summary>
+    /// 拉取FeedSourceId，将拉取的FeedItem存储到数据库
+    /// </summary>
+    /// <param name="feedId"></param>
+    /// <returns></returns>
     public async Task<(FeedSource? Feed, IReadOnlyList<FeedItem> Items)> FetchFeed(int feedId)
     {
         var source = await _context.FeedSources.FindAsync(feedId);
@@ -46,7 +54,7 @@ public class RSSUpdater
             return (null, Array.Empty<FeedItem>());
         }
 
-        var items = await GetFeedItem(source.Url);
+        var items = await GetFeedItemFromWeb(source.Url);
         var itemIds = items.Select(it => it.Id).ToList();
         var existsId = _context.FeedItems
             .Where(it => itemIds.Contains(it.Id))
@@ -62,33 +70,57 @@ public class RSSUpdater
         return (source, newItems);
     }
 
-    public async Task<IReadOnlyList<FeedRule>> GetRulesByFeedId(int feedId)
+    /// <summary>
+    /// 尝试对数据库中已经存在的FeedSource测试规则
+    /// </summary>
+    /// <param name="sourceId"></param>
+    /// <param name="pattern"></param>
+    /// <param name="replacement"></param>
+    /// <returns></returns>
+    public async Task<Dictionary<string, List<FeedItem>>> TestFeedRule(
+        int sourceId, string pattern, string replacement)
     {
-        var ruleIds = await _context.EnabledRules
-            .Where(it => it.FeedSourceId == feedId)
-            .Select(it => it.FeedRuleId)
-            .ToListAsync();
-
-        return await _context.FeedRules
-            .Where(it => ruleIds.Contains(it.Id))
-            .ToListAsync();
+        var feedItems = await _context.FeedItems.Where(it => it.FeedSourceId == sourceId).ToListAsync();
+        return 
+            Grouping(
+                feedItems,
+                [ new FeedRule { Pattern = pattern, Replacement = replacement } ])
+            .ToDictionary(
+                it => it.Key,
+                it => it.Value.Select(it => it.FeedItem).ToList());
     }
 
-    public async Task<IReadOnlyList<FeedGroup>> GetGroupsByFeedId(int feedId)
+    /// <summary>
+    /// 对指定Feed应用指定Rules
+    /// </summary>
+    /// <param name="sourceId"></param>
+    /// <param name="ruleIds"></param>
+    /// <returns></returns>
+    public async Task ApplyNewRulesForFeed(
+        int sourceId, ICollection<int> ruleIds)
     {
-        var groupIds = await _context.SourceGroups
-            .Where(it => it.FeedSourceId == feedId)
-            .Select(it => it.FeedGroupId)
+        var rules = await _context.FeedRules
+            .Where(e => ruleIds.Contains(e.Id))
             .ToListAsync();
+        await ApplyRulesForItems(sourceId, null, rules);
+    }
+    #endregion
 
-        return await _context.FeedGroups
-            .Where(it => groupIds.Contains(it.Id))
-            .ToListAsync();
+    private async Task ApplyRulesForItems(
+        int sourceId, 
+        IReadOnlyList<FeedItem>? items = null, 
+        IReadOnlyList<FeedRule>? rules = null)
+    {
+        var processedItems = Grouping(
+            items ?? await GetFeedItemsByFeedIdFromDb(sourceId), 
+            rules ?? await GetRulesByFeedIdFromDb(sourceId));
+
+        await ApplyGroups(sourceId, processedItems);
     }
 
     private async Task ApplyGroups(int sourceId, Dictionary<string, ICollection<(FeedItem FeedItem, FeedRule Rule)>> processedItems)
     {
-        var groups = await GetGroupsByFeedId(sourceId);
+        var groups = await GetGroupsByFeedIdFromDb(sourceId);
         var groupNames = processedItems.Keys.ToList();
         foreach (var group in processedItems)
         {
@@ -118,7 +150,7 @@ public class RSSUpdater
         await _context.SaveChangesAsync();
     }
 
-    public static Dictionary<string, ICollection<(FeedItem FeedItem, FeedRule Rule)>> Grouping(
+    private static Dictionary<string, ICollection<(FeedItem FeedItem, FeedRule Rule)>> Grouping(
         IReadOnlyList<FeedItem> newItems, IReadOnlyList<FeedRule> rules)
     {
         // process items by rules
@@ -150,7 +182,40 @@ public class RSSUpdater
         return processedItems;
     }
 
-    private async Task<IReadOnlyList<FeedItem>> GetFeedItem(string url)
+    #region Query data from db
+    public async Task<IReadOnlyList<FeedGroup>> GetGroupsByFeedIdFromDb(int feedId)
+    {
+        var groupIds = await _context.SourceGroups
+            .Where(it => it.FeedSourceId == feedId)
+            .Select(it => it.FeedGroupId)
+            .ToListAsync();
+
+        return await _context.FeedGroups
+            .Where(it => groupIds.Contains(it.Id))
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<FeedRule>> GetRulesByFeedIdFromDb(int feedId)
+    {
+        var ruleIds = await _context.EnabledRules
+            .Where(it => it.FeedSourceId == feedId)
+            .Select(it => it.FeedRuleId)
+            .ToListAsync();
+
+        return await _context.FeedRules
+            .Where(it => ruleIds.Contains(it.Id))
+            .ToListAsync();
+    }
+    
+    private Task<List<FeedItem>> GetFeedItemsByFeedIdFromDb(int sourceId)
+    {
+        return _context.FeedItems
+            .Where(e => e.FeedSourceId == sourceId)
+            .ToListAsync();
+    }
+    #endregion
+
+    private async Task<IReadOnlyList<FeedItem>> GetFeedItemFromWeb(string url)
     {
         CodeHollow.FeedReader.Feed feed = await GetFeed(url);
         // todo 是否除了2.0也兼容？
@@ -171,7 +236,6 @@ public class RSSUpdater
             })
             .ToList();
     }
-    #endregion
 
     public static async Task<FeedInfoResponse> GetFeedInfo(string url)
     {

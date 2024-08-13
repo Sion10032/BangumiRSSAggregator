@@ -37,21 +37,12 @@ public static class FeedHandler
         return updater.FetchAndUpdate(id);
     }
 
-    private static async Task<Dictionary<string, List<FeedItem>>> TestFeedRule(
+    private static Task<Dictionary<string, List<FeedItem>>> TestFeedRule(
         [FromRoute] int id,
         [FromBody] FeedTestRuleRequest testRule,
-        [FromServices] BangumiDb db)
+        [FromServices] RSSUpdater rssUpdater)
     {
-        var feedItems = db.FeedItems.Where(it => it.FeedSourceId == id).ToList();
-        return RSSUpdater
-            .Grouping(
-                feedItems,
-                [
-                    new FeedRule { Pattern = testRule.Pattern, Replacement = testRule.Replacement }
-                ])
-            .ToDictionary(
-                it => it.Key,
-                it => it.Value.Select(it => it.FeedItem).ToList());
+        return rssUpdater.TestFeedRule(id, testRule.Pattern, testRule.Replacement);
     }
 
     private static async Task<FeedSource?> GetFeed(
