@@ -5,17 +5,20 @@ import { cloneAndUpdateProperty } from '@/shared/utils';
 
 import "./AutoHeightTable.css";
 
+// todo 优化selection相关代码，抽象一个类型 undefined | { type: 'single', ... } | { type: 'multiple', ... }
+
 type Props<T = any> = Omit<TableProps<T>, "rowKey" | "rowSelection" | "style"> & {
   offset?: number;
   headerHeight?: number;
-  style?: React.CSSProperties
+  style?: React.CSSProperties;
+  selectionType?: "single" | "multiple";
   keySelector: (obj : T) => React.Key;
   onSelectionChanged? : (keys : React.Key[]) => Promise<void>;
 };
 
 type TableRowSelection<T> = TableProps<T>['rowSelection'];
 
-function AutoHeightTable<T = any>({ offset, headerHeight, style, keySelector, onSelectionChanged, ...props }: Props) {
+function AutoHeightTable<T = any>({ offset, headerHeight, style, selectionType, keySelector, onSelectionChanged, ...props }: Props) {
   const [ tableHeight, setTableHeight] = useState(0);
   const OnTableResized = (sizeInfo: { width: number, height: number }) => {
     console.log(sizeInfo);
@@ -28,21 +31,27 @@ function AutoHeightTable<T = any>({ offset, headerHeight, style, keySelector, on
     console.log('selectedRowKeys changed: ', keys);
     onSelectionChanged?.(keys);
   };
-  const rowSelection: TableRowSelection<T> = {
-    type: "radio",
-    selectedRowKeys,
-    onChange: updateSelectedRowKeys,
-  };
-  const selectRow = (record : T) => {
-    const newSelectedRowKeys = [...selectedRowKeys];
-    var recordKey = keySelector(record);
-    if (selectedRowKeys.indexOf(recordKey) >= 0) {
-      newSelectedRowKeys.splice(newSelectedRowKeys.indexOf(recordKey), 1);
-    } else {
-      newSelectedRowKeys.push(recordKey);
-    }
-    updateSelectedRowKeys(newSelectedRowKeys);
-  };
+  const rowSelection: TableRowSelection<T> = selectionType === undefined
+    ? undefined
+    : {
+      type: selectionType === "single" ? "radio" : "checkbox",
+      selectedRowKeys,
+      onChange: updateSelectedRowKeys,
+    };
+  const onRow = selectionType === undefined
+    ? undefined
+    : (record : T) => ({
+      onClick: () => {
+        const newSelectedRowKeys = [...selectedRowKeys];
+        var recordKey = keySelector(record);
+        if (selectedRowKeys.indexOf(recordKey) >= 0) {
+          newSelectedRowKeys.splice(newSelectedRowKeys.indexOf(recordKey), 1);
+        } else {
+          newSelectedRowKeys.push(recordKey);
+        }
+        updateSelectedRowKeys(newSelectedRowKeys);
+      }
+    });
 
   return (
     <ResizeObserver onResize={OnTableResized}>
@@ -51,11 +60,7 @@ function AutoHeightTable<T = any>({ offset, headerHeight, style, keySelector, on
         scroll={{ y: tableHeight }}
         rowKey={keySelector}
         rowSelection={rowSelection}
-        onRow={(record) => ({
-          onClick: () => {
-            selectRow(record);
-          }
-        })}
+        onRow={onRow}
         {...props}/>
     </ResizeObserver>
   );

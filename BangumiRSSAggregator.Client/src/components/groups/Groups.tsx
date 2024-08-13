@@ -8,6 +8,7 @@ import type { BangumiGroup } from '@/shared/types/models';
 import AutoHeightTable from '../AutoHeightTable'
 import { getRestClient } from '@/shared/rest-client';
 import { cloneAndUpdateProperty, getSelectedItems } from '@/shared/utils';
+import { UpdateGroupStatusRequest } from '@/shared/types/requests';
 
 function Groups() {
   const [ messageApi, contextHolder ] = message.useMessage();
@@ -39,20 +40,17 @@ function Groups() {
   ];
 
   const setGroupStatus = async (status : boolean) => {
-    const selectedItems = getSelectedItems(groups, selectedRowKeys.current, o => o.id);
-    if (selectedItems.length != 1) {
-      return;
-    }
-    // todo 同时启用/禁用多个group
-    const result = await restClient.update(
-      selectedItems[0].id,
-      cloneAndUpdateProperty(selectedItems[0], "enabled", status),
-    );
-    if (result) {
-      messageApi.info(`Update group-${selectedItems[0].id} success.`)
+    const reqParam: UpdateGroupStatusRequest = { groupIds: selectedRowKeys.current as number[] };
+    console.log("update group status:", status, reqParam)
+
+    // 同时启用/禁用多个group
+    const result = await restClient.client
+      .post(status ? "enable" : "disable", { json: reqParam });
+    if (result.ok) {
+      messageApi.info(`Update groups success.`)
     }
     else {
-      messageApi.warning(`Update group-${selectedItems[0].id} failed.`)
+      messageApi.warning(`Update groups failed.`)
     }
     setRefreshData(!refreshData);
   };
@@ -72,6 +70,7 @@ function Groups() {
           offset={8}
           dataSource={groups}
           columns={columns}
+          selectionType='multiple'
           keySelector={o => o.id}
           onSelectionChanged={async keys => {selectedRowKeys.current = keys}}
           size='small'

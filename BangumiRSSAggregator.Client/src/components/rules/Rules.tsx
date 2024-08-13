@@ -82,6 +82,7 @@ function Rules() {
           offset={8}
           dataSource={feeds}
           columns={columns}
+          selectionType='single'
           keySelector={o => o.id}
           onSelectionChanged={async keys => {selectedRowKeys.current = keys}}
           size='small'

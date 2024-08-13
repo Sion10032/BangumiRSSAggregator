@@ -49,7 +49,8 @@ apiGroup.MapGroup("/feeds")
 apiGroup.MapGroup("/feed-items")
     .MapSimpleRestApi<FeedItem, string, BangumiDb>();
 apiGroup.MapGroup("/bangumi/groups")
-    .MapSimpleRestApi<FeedGroup, int, BangumiDb>();
+    .MapSimpleRestApi<FeedGroup, int, BangumiDb>()
+    .MapGroupApis();
 apiGroup.MapGroup("/bangumi/items")
     .MapBangumiItemApis();
 
