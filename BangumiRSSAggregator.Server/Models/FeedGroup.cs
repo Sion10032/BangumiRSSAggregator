@@ -1,6 +1,6 @@
 ﻿namespace BangumiRSSAggregator.Server.Models;
 
-public class FeedGroup
+public class FeedGroup : EntityBase
 {
     public int Id { get; set; }
     public required string Name { get; set; }

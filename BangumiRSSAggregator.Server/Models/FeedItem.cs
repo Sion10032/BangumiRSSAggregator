@@ -3,7 +3,7 @@
 /// <summary>
 /// 从订阅源获取到的数据
 /// </summary>
-public class FeedItem
+public class FeedItem : EntityBase
 {
     public required string Id { get; set; }
     public required string Name { get; set; }

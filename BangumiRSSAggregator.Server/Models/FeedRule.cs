@@ -1,6 +1,6 @@
 ﻿namespace BangumiRSSAggregator.Server.Models;
 
-public class FeedRule
+public class FeedRule : EntityBase
 {
     public int Id { get; set; }
     public required string Pattern {  get; set; }

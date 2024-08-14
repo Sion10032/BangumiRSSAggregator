@@ -1,6 +1,6 @@
 ﻿namespace BangumiRSSAggregator.Server.Models;
 
-public class SourceGroup
+public class SourceGroup : EntityBase
 {
     public int FeedSourceId { get; set; }
     public int FeedGroupId { get; set; }

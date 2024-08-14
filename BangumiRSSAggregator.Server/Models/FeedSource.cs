@@ -3,7 +3,7 @@
 /// <summary>
 /// 订阅源
 /// </summary>
-public class FeedSource
+public class FeedSource : EntityBase
 {
     public int Id { get; set; }
     public required string Name { get; set; }
