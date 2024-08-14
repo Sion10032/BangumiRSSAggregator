@@ -232,6 +232,7 @@ public class RSSUpdater
                 Id = it.Guid,
                 Name = it.Title,
                 Url = it.Enclosure.Url,
+                PubDate = it.PublishingDate ?? DateTime.Now,
                 RawContent = it.Element.ToXml(),
             })
             .ToList();

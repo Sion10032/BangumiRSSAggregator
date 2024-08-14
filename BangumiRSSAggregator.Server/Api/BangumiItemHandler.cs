@@ -20,7 +20,7 @@ public static class BangumiItemHandler
     {
         var bangumiItems = await db.BangumiItems
             .Include(it => it.FeedItem)
-            .OrderByDescending(it => it.FeedItem.Id) // todo 按时间排序
+            .OrderByDescending(it => it.FeedItem.PubDate) // 按发布时间倒叙排序
             .Skip((page ?? 0) * (size ?? 50))
             .Take(size ?? 50)
             .ToListAsync();

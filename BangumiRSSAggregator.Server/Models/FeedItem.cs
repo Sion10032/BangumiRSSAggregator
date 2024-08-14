@@ -9,6 +9,7 @@ public class FeedItem : EntityBase
     public required string Name { get; set; }
     public required string Url { get; set; }
     public required string RawContent { get; set; }
+    public required DateTime PubDate { get; set; }
 
     public int? FeedSourceId { get; set; }
     public FeedSource? FeedSource { get; set; }

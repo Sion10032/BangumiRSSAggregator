@@ -98,6 +98,9 @@ namespace BangumiRSSAggregator.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("PubDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("RawContent")
                         .IsRequired()
                         .HasColumnType("TEXT");
