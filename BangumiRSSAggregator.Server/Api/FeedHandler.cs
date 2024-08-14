@@ -12,6 +12,7 @@ public static class FeedHandler
         group.MapGet("/{id}/fetch", Fetch);
         group.MapGet("/{id}/fetch-and-update", FetchAndUpdateFeed);
         group.MapPost("/{id}/test-rule", TestFeedRule);
+        group.MapPost("/{id}/add-rule", AddFeedRule);
 
         return group;
     }
@@ -43,6 +44,36 @@ public static class FeedHandler
         [FromServices] RSSUpdater rssUpdater)
     {
         return rssUpdater.TestFeedRule(id, testRule.Pattern, testRule.Replacement);
+    }
+
+    private static async Task AddFeedRule(
+        [FromRoute] int id,
+        [FromBody] FeedTestRuleRequest rule,
+        [FromServices] BangumiDb db)
+    {
+        // 优先使用已经存在的规则
+        var feedRule = await db.FeedRules
+            .Where(e => e.Pattern == rule.Pattern)
+            .Where(e => e.Replacement == rule.Replacement)
+            .FirstOrDefaultAsync();
+        if (feedRule == null)
+        {
+            feedRule = new FeedRule
+            {
+                Pattern = rule.Pattern,
+                Replacement = rule.Replacement,
+            };
+        }
+
+        db.FeedRules.Add(feedRule);
+        db.EnabledRules.Add(new EnabledRule
+        {
+            FeedSourceId = id,
+            FeedRule = feedRule,
+        });
+        await db.SaveChangesAsync();
+
+        // todo 请求在后台更新Groups和BangumiItems
     }
 
     private static async Task<FeedSource?> GetFeed(

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, message } from 'antd';
+import { Button, Card, message, Space } from 'antd';
 import { MdAdd, MdDelete, MdEdit, MdPlayArrow, MdPlayDisabled } from "react-icons/md";
 
 import type { TableColumnsType } from 'antd';
@@ -11,7 +11,11 @@ import { getRestClient } from '@/shared/rest-client';
 import client from '@/shared/client';
 import { UpdateRulesForFeedRequest } from '@/shared/types/requests';
 
-function Rules() {
+type RulesProps = {
+  currentFeedId? : number;
+};
+
+function Rules({ currentFeedId } : RulesProps) {
   const [ messageApi, contextHolder ] = message.useMessage();
   const [ feeds, setRules ] = useState<FeedRule[]>([]);
   const [ refreshData, setRefreshData ] = useState<boolean>(false);
@@ -40,9 +44,14 @@ function Rules() {
     setRefreshData(!refreshData);
   };
   const updateStatusForSelectedRules = async (status : boolean) => {
+    if (!currentFeedId) {
+      messageApi.info("Please select a feed.");
+      return;
+    }
+
     const path = `feed-rules/${status ? "enable" : "disable"}`;
     const param : UpdateRulesForFeedRequest = {
-      feedId: 0,
+      feedId: currentFeedId,
       ruleIds: selectedRowKeys.current as number[], 
     };
     await client.post(path, { json: param })
@@ -50,12 +59,12 @@ function Rules() {
   
   const onAddConfirm = async (value : FeedRule) => {
     if (await restClient.add(value)) {
-      messageApi.success("add rule success.");
+      messageApi.success("Add rule success.");
       setIsOpen(false);
       setRefreshData(!refreshData);
     }
     else {
-      messageApi.warning("add rule failed");
+      messageApi.warning("Add rule failed");
     }
   };
   const onAddCancel = async () => setIsOpen(false);
@@ -83,14 +92,7 @@ function Rules() {
       <Card
         title="Rules"
         className="flexible-card"
-        hoverable={true}
-        actions={[
-          <MdAdd onClick={openEditItemModal}/>,
-          <MdEdit />,
-          <MdDelete onClick={deleteItem}/>,
-          <MdPlayArrow onClick={() => updateStatusForSelectedRules(true)} />,
-          <MdPlayDisabled onClick={() => updateStatusForSelectedRules(false)} />,
-        ]}>
+        hoverable={true}>
         <AutoHeightTable
           offset={8}
           dataSource={feeds}
@@ -106,6 +108,13 @@ function Rules() {
           onConfirm={onAddConfirm}
           onCancel={onAddCancel}/>
       </Card>
+      <Space.Compact className='horizontal-action-space-compact'>
+        <Button icon={<MdAdd/>} onClick={openEditItemModal}/>
+        <Button icon={<MdEdit/>} onClick={undefined}/>
+        <Button icon={<MdDelete/>} onClick={deleteItem}/>
+        <Button icon={<MdPlayArrow/>} onClick={() => updateStatusForSelectedRules(true)}/>
+        <Button icon={<MdPlayDisabled/>} onClick={() => updateStatusForSelectedRules(false)}/>
+      </Space.Compact>
     </>
   );
 }

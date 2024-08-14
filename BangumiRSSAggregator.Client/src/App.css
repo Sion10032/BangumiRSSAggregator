@@ -10,3 +10,11 @@
   padding: 8px;
   min-height: 0;
 }
+
+.horizontal-action-space-compact {
+  width: 100%;
+  margin: 6px 0;
+  button {
+    flex-grow: 1 !important;
+  }
+}

@@ -21,7 +21,7 @@ type TableRowSelection<T> = TableProps<T>['rowSelection'];
 function AutoHeightTable<T = any>({ offset, headerHeight, style, selectionType, keySelector, onSelectionChanged, ...props }: Props) {
   const [ tableHeight, setTableHeight] = useState(0);
   const OnTableResized = (sizeInfo: { width: number, height: number }) => {
-    console.log(sizeInfo);
+    // console.log(sizeInfo);
     setTableHeight(sizeInfo.height - (headerHeight ?? 32) - (offset ?? 8));
   };
 

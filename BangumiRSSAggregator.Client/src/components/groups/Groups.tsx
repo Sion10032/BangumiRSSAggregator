@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, message } from 'antd';
+import { Button, Card, message, Space } from 'antd';
 import { MdPlayArrow, MdPlayDisabled } from "react-icons/md";
 
 import type { TableColumnsType } from 'antd';
@@ -7,7 +7,6 @@ import type { BangumiGroup } from '@/shared/types/models';
 
 import AutoHeightTable from '../AutoHeightTable'
 import { getRestClient } from '@/shared/rest-client';
-import { cloneAndUpdateProperty, getSelectedItems } from '@/shared/utils';
 import { UpdateGroupStatusRequest } from '@/shared/types/requests';
 
 function Groups() {
@@ -40,6 +39,11 @@ function Groups() {
   ];
 
   const setGroupStatus = async (status : boolean) => {
+    if (selectedRowKeys.current.length <= 0) {
+      messageApi.info("Please select as least one group.");
+      return;
+    }
+
     const reqParam: UpdateGroupStatusRequest = { groupIds: selectedRowKeys.current as number[] };
     console.log("update group status:", status, reqParam)
 
@@ -61,11 +65,7 @@ function Groups() {
       <Card
         title="Groups"
         className="flexible-card"
-        hoverable={true}
-        actions={[
-          <MdPlayArrow onClick={() => setGroupStatus(true)}/>,
-          <MdPlayDisabled onClick={() => setGroupStatus(false)}/>,
-        ]}>
+        hoverable={true}>
         <AutoHeightTable
           offset={8}
           dataSource={groups}
@@ -77,6 +77,10 @@ function Groups() {
           pagination={false}>
         </AutoHeightTable>
       </Card>
+      <Space.Compact className='horizontal-action-space-compact'>
+        <Button icon={<MdPlayArrow/>} onClick={() => setGroupStatus(true)}/>
+        <Button icon={<MdPlayDisabled/>} onClick={() => setGroupStatus(false)}/>
+      </Space.Compact>
     </>
   );
 }

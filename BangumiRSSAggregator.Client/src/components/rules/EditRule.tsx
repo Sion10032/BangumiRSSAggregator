@@ -31,7 +31,7 @@ export function AddRuleFormModal({ isOpen, defaultValue, onConfirm, onCancel } :
   });
   return (
     <Modal
-      title="AddFeed"
+      title="Add Rule"
       open={isOpen}
       onOk={e => onConfirm(feedRuleState[0])}
       onCancel={e => onCancel()}

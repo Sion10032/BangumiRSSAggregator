@@ -54,7 +54,7 @@ export function AddFeedFormModal({ isOpen, defaultValue, onConfirm, onCancel } :
   });
   return (
     <Modal
-      title="AddFeed"
+      title="Add Feed"
       open={isOpen}
       onOk={e => onConfirm(feedSourceState[0])}
       onCancel={e => onCancel()}

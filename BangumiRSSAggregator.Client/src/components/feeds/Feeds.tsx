@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, message } from 'antd';
+import { Button, Card, message, Space } from 'antd';
 import { MdAdd, MdDelete, MdEdit, MdRefresh, MdScience } from "react-icons/md";
 
 import type { TableColumnsType } from 'antd';
@@ -11,7 +11,11 @@ import { getRestClient } from '@/shared/rest-client';
 import client from '@/shared/client';
 import { TestRuleModal } from './TestRule';
 
-function Feeds() {
+type FeedsProps = {
+  onSelectedFeedChanged? : (feedIds : number[]) => Promise<void>;
+};
+
+function Feeds({ onSelectedFeedChanged } : FeedsProps) {
   const [ messageApi, contextHolder ] = message.useMessage();
   const [ feeds, setFeeds ] = useState<FeedSource[]>([]);
   const [ refreshData, setRefreshData ] = useState<boolean>(false);
@@ -94,6 +98,10 @@ function Feeds() {
       dataIndex: 'name',
     }
   ];
+  const onSelectionChanged = async (keys : React.Key[]) => {
+    selectedRowKeys.current = keys;
+    onSelectedFeedChanged?.(keys as number[]);
+  };
 
   return (
     <>
@@ -101,21 +109,14 @@ function Feeds() {
       <Card
         title="Feeds"
         className="flexible-card"
-        hoverable={true}
-        actions={[
-          <MdAdd onClick={openEditModal}/>,
-          <MdEdit />,
-          <MdDelete onClick={deleteFeed}/>,
-          <MdRefresh onClick={fetchFeed}/>,
-          <MdScience onClick={openTestRuleModal}/>,
-        ]}>
+        hoverable={true}>
         <AutoHeightTable
           offset={8}
           dataSource={feeds}
           columns={columns}
           selectionType='single'
           keySelector={o => o.id}
-          onSelectionChanged={async keys => {selectedRowKeys.current = keys}}
+          onSelectionChanged={onSelectionChanged}
           size='small'
           pagination={false}>
         </AutoHeightTable>
@@ -123,10 +124,22 @@ function Feeds() {
           isOpen={isEditModalOpen}
           onConfirm={onAddConfirm}
           onCancel={onAddCancel}/>
-        <TestRuleModal 
+        <TestRuleModal
+          sourceId={feedIdForTestRule}
           isOpen={isTestRuleModalOpen}
-          sourceId={feedIdForTestRule}/>
+          onClose={async () => setIsTestRuleModalOpen(false)}
+          onRuleAdded={async () => {
+            setIsTestRuleModalOpen(false);
+            window.location.reload();
+          }}/>
       </Card>
+      <Space.Compact className='horizontal-action-space-compact'>
+        <Button icon={<MdAdd/>} onClick={openEditModal}/>
+        <Button icon={<MdEdit/>} onClick={undefined}/>
+        <Button icon={<MdDelete/>} onClick={deleteFeed}/>
+        <Button icon={<MdRefresh/>} onClick={fetchFeed}/>
+        <Button icon={<MdScience/>} onClick={openTestRuleModal}/>
+      </Space.Compact>
     </>
   );
 }
