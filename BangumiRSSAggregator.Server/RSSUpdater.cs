@@ -1,10 +1,11 @@
-﻿using System.Net.Http;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using BangumiRSSAggregator.Server.Models;
 using BangumiRSSAggregator.Server.Utils;
 using BangumiRSSAggregator.Server.Api;
+using System.ServiceModel.Syndication;
+using System.Xml;
 
 namespace BangumiRSSAggregator.Server;
 
@@ -103,6 +104,29 @@ public class RSSUpdater
             .Where(e => ruleIds.Contains(e.Id))
             .ToListAsync();
         await ApplyRulesForItems(sourceId, null, rules);
+    }
+
+    public async Task<string> GetGeneratedFeed()
+    {
+        var bangumiItems = await _context.BangumiItems
+            .Include(it => it.FeedItem)
+            .Include(it => it.FeedGroup)
+            .Where(it => it.FeedGroup.Enabled)
+            .OrderByDescending(it => it.FeedItem.PubDate) // 按发布时间倒叙排序
+            .Take(200)
+            .ToListAsync();
+
+        var rssFormatter = new Rss20FeedFormatter(new SyndicationFeed(
+            "Bangumi RSS",
+            "",
+            new Uri(""),
+            bangumiItems.Select(it => SyndicationItem.Load(XmlReader.Create(new StringReader(it.FeedItem.RawContent)))).ToList()));
+
+        using (var stringWriter = new StringWriter())
+        {
+            rssFormatter.WriteTo(XmlWriter.Create(stringWriter));
+            return stringWriter.ToString();
+        }
     }
     #endregion
 

@@ -10,6 +10,7 @@ using BangumiRSSAggregator.Server;
 using BangumiRSSAggregator.Server.Api;
 using BangumiRSSAggregator.Server.Models;
 using BangumiRSSAggregator.Server.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/", () => "Hello World!");
+app.MapGet("/rss.xml", GetFeed);
 
 var apiGroup = app.MapGroup("/api");
 apiGroup.MapGroup("/feeds")
@@ -56,7 +58,10 @@ apiGroup.MapGroup("/bangumi/groups")
 apiGroup.MapGroup("/bangumi/items")
     .MapBangumiItemApis();
 
-//apiGroup.MapGroup("/feeds")
-//    .MapFeedApis();
-
 app.Run();
+
+Task<string> GetFeed(HttpContext context, [FromServices] RSSUpdater rssUpdater)
+{
+    context.Response.ContentType = "text/xml";
+    return rssUpdater.GetGeneratedFeed();
+}
