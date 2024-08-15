@@ -15,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy(policy => policy
         .AllowAnyOrigin()
@@ -25,8 +28,15 @@ builder.Services.AddCors(options => {
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<BangumiDb>(options => options.UseSqlite(@"Data Source=.\db.sqlite"));
-builder.Services.AddScoped<RSSUpdater>();
+builder.Services.AddDbContext<BangumiDb>(
+    options => options.UseSqlite(@"Data Source=.\db.sqlite"), 
+    ServiceLifetime.Transient, 
+    ServiceLifetime.Transient);
+builder.Services.AddTransient<Func<BangumiDb>>(ctx => () => ctx.GetService<BangumiDb>()!);
+builder.Services.AddTransient<RSSUpdater>();
+builder.Services.AddTransient<Func<RSSUpdater>>(ctx => () => ctx.GetService<RSSUpdater>()!);
+
+builder.Services.AddHostedService<BangumiBackgroudService>();
 
 var app = builder.Build();
 

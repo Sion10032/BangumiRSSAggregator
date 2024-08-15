@@ -65,6 +65,7 @@ public class RSSUpdater
         newItems.ForEach(it => it.FeedSourceId = feedId);
 
         // save new items
+        source.LastUpdated = DateTime.Now;
         await _context.FeedItems.AddRangeAsync(newItems);
         await _context.SaveChangesAsync();
 
