@@ -60,8 +60,9 @@ apiGroup.MapGroup("/bangumi/items")
 
 app.Run();
 
-Task<string> GetFeed(HttpContext context, [FromServices] RSSUpdater rssUpdater)
+async Task<string> GetFeed(HttpContext context, [FromServices] RSSUpdater rssUpdater)
 {
     context.Response.ContentType = "text/xml";
-    return rssUpdater.GetGeneratedFeed();
+    var result = await rssUpdater.GetGeneratedFeed();
+    return result;
 }

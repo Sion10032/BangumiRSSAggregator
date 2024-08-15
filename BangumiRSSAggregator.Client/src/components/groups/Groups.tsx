@@ -35,6 +35,8 @@ function Groups() {
     {
       title: 'Enabled',
       dataIndex: 'enabled',
+      width: 100,
+      render: (v : boolean) => v ? "✔" : "",
     }
   ];
 

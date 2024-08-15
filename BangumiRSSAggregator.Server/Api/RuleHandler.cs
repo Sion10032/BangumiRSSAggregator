@@ -8,8 +8,8 @@ public static class RuleHandler
 {
     public static RouteGroupBuilder MapFeedRuleApis(this RouteGroupBuilder group)
     {
-        group.MapGet("enable", EnableRulesForFeed);
-        group.MapGet("disable", DisableRulesForFeed);
+        group.MapPost("enable", EnableRulesForFeed);
+        group.MapPost("disable", DisableRulesForFeed);
         return group;
     }
 

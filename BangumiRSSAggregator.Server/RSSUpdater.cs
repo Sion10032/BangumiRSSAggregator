@@ -119,12 +119,17 @@ public class RSSUpdater
         var rssFormatter = new Rss20FeedFormatter(new SyndicationFeed(
             "Bangumi RSS",
             "",
-            new Uri(""),
-            bangumiItems.Select(it => SyndicationItem.Load(XmlReader.Create(new StringReader(it.FeedItem.RawContent)))).ToList()));
+            new Uri("http://bangumi-rss/rss.xml"), // todo link 
+            bangumiItems
+                .Select(it => SyndicationItem.Load(XmlReader.Create(new StringReader(it.FeedItem.RawContent))))
+                .ToList()));
 
         using (var stringWriter = new StringWriter())
+        using (var xmlWriter = XmlWriter.Create(stringWriter))
         {
-            rssFormatter.WriteTo(XmlWriter.Create(stringWriter));
+            rssFormatter.WriteTo(xmlWriter);
+            xmlWriter.Flush();
+            stringWriter.Flush();
             return stringWriter.ToString();
         }
     }
