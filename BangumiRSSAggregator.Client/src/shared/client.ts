@@ -1,7 +1,9 @@
 import ky, { Options } from "ky";
 
+import config from "@/config";
+
 const option : Options = {
-  prefixUrl: "http://localhost:5072/api",
+  prefixUrl: config.BaseUrl,
   timeout: 20000,
 };
 

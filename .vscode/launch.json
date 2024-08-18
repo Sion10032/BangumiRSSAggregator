@@ -23,7 +23,8 @@
                 "uriFormat": "http://localhost:%s",
                 "webRoot": "${workspaceFolder}/BangumiRSSAggregator.Client/src",
                 "killOnServerStop": true,
-            }
+            },
+            "envFile": "${workspaceFolder}/.env.development"
         },
         {
             "name": "Server",
@@ -33,6 +34,7 @@
             "program": "${workspaceFolder}/BangumiRSSAggregator.Server/bin/Debug/net8.0/BangumiRSSAggregator.Server.dll",
             "launchSettingsProfile": "http",
             "preLaunchTask": "build",
+            "envFile": "${workspaceFolder}/.env.development"
         },
     ],
     "compounds": [

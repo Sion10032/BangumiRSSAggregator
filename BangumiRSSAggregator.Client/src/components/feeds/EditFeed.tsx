@@ -56,9 +56,9 @@ export function AddFeedFormModal({ isOpen, defaultValue, onConfirm, onCancel } :
     <Modal
       title="Add Feed"
       open={isOpen}
-      onOk={e => onConfirm(feedSourceState[0])}
-      onCancel={e => onCancel()}
-      onClose={e => onCancel()}>
+      onOk={_ => onConfirm(feedSourceState[0])}
+      onCancel={_ => onCancel()}
+      onClose={_ => onCancel()}>
       <EditFeedForm feedState={feedSourceState} />
     </Modal>
   );

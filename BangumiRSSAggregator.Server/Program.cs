@@ -19,17 +19,19 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(policy => policy
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+    options.AddPolicy(
+        "dev-allow-all",
+        policy => policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<BangumiDb>(
-    options => options.UseSqlite(@"Data Source=.\db.sqlite"), 
+    options => options.UseSqlite(builder.Configuration.GetConnectionString("BangumiDb")), 
     ServiceLifetime.Transient, 
     ServiceLifetime.Transient);
 builder.Services.AddTransient<Func<BangumiDb>>(ctx => () => ctx.GetService<BangumiDb>()!);
@@ -40,15 +42,13 @@ builder.Services.AddHostedService<BangumiBackgroudService>();
 
 var app = builder.Build();
 
-app.UseCors();
-
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("dev-allow-all");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Hello World!");
 app.MapGet("/rss.xml", GetFeed);
 
 var apiGroup = app.MapGroup("/api");
@@ -67,6 +67,9 @@ apiGroup.MapGroup("/bangumi/groups")
     .MapGroupApis();
 apiGroup.MapGroup("/bangumi/items")
     .MapBangumiItemApis();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.Run();
 

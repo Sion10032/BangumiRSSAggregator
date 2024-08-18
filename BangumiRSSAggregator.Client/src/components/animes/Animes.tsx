@@ -9,7 +9,7 @@ import client from '@/shared/client';
 
 function Animes() {
   const [ items, setItems ] = useState<BangumiItem[]>([]);
-  const [ refreshData, setRefreshData ] = useState<boolean>(false);
+  const [ refreshData, _ ] = useState<boolean>(false);
 
   const getItems = () => client.get("bangumi/items").json<BangumiItem[]>();
 

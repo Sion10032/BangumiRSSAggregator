@@ -33,9 +33,9 @@ export function AddRuleFormModal({ isOpen, defaultValue, onConfirm, onCancel } :
     <Modal
       title="Add Rule"
       open={isOpen}
-      onOk={e => onConfirm(feedRuleState[0])}
-      onCancel={e => onCancel()}
-      onClose={e => onCancel()}>
+      onOk={_ => onConfirm(feedRuleState[0])}
+      onCancel={_ => onCancel()}
+      onClose={_ => onCancel()}>
       <EditRuleForm feedState={feedRuleState} />
     </Modal>
   );
