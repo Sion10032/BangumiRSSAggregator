@@ -71,6 +71,17 @@ apiGroup.MapGroup("/bangumi/items")
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+// migration
+if (!Directory.Exists("data"))
+{
+    Directory.CreateDirectory("data");
+}
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BangumiDb>();
+    db.Database.Migrate();
+}
+
 app.Run();
 
 async Task<string> GetFeed(HttpContext context, [FromServices] RSSUpdater rssUpdater)
