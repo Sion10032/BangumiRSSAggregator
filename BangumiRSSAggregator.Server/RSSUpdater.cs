@@ -122,7 +122,13 @@ public class RSSUpdater
             "",
             new Uri("http://bangumi-rss/rss.xml"), // todo link 
             bangumiItems
-                .Select(it => SyndicationItem.Load(XmlReader.Create(new StringReader(it.FeedItem.RawContent))))
+                .Select(it => 
+                {
+                    var item = SyndicationItem.Load(XmlReader.Create(new StringReader(it.FeedItem.RawContent)));
+                    item.Summary = new TextSyndicationContent(
+                        item.Summary.Text?.Replace("\n", "&#xA;") ?? string.Empty);
+                    return item;
+                })
                 .ToList()));
 
         using (var stringWriter = new StringWriter())
