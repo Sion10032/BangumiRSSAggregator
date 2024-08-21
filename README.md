@@ -29,7 +29,7 @@
 version: "3"
 services:
   bangumi-rss-aggregator:
-    image: bangumi-rss-aggregator:latest
+    image: sion10032/bangumi-rss-aggregator:latest
     container_name: bangumi-rss-aggregator
     ports:
       - 20000:8080
