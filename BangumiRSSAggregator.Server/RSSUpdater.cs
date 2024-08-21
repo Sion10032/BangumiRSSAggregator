@@ -131,7 +131,7 @@ public class RSSUpdater
                 })
                 .ToList()));
 
-        using (var stringWriter = new StringWriter())
+        using (var stringWriter = new StringWriterWithEncoding())
         using (var xmlWriter = XmlWriter.Create(stringWriter))
         {
             rssFormatter.WriteTo(xmlWriter);
