@@ -16,7 +16,7 @@ public static class RuleHandler
     private static async Task EnableRulesForFeed(
         [FromBody] UpdateRulesForFeedRequest param,
         [FromServices] BangumiDb db,
-        [FromServices] RSSUpdater rssUpdater)
+        [FromServices] BangumiBackgroudService bangumiBackgroudService)
     {
         var existRules = await db.EnabledRules
             .Where(it => it.FeedSourceId == param.FeedId)
@@ -28,20 +28,22 @@ public static class RuleHandler
             await db.EnabledRules.AddRangeAsync(needAddRuleIds
                 .Select(it => new EnabledRule { FeedSourceId = param.FeedId, FeedRuleId = it })
                 .ToList());
+            await db.SaveChangesAsync();
 
             // 启用规则后，应用新启用的规则
-            await rssUpdater.ApplyNewRulesForFeed(param.FeedId, needAddRuleIds);
+            bangumiBackgroudService.EnqueueApplyNewRule(param.FeedId, needAddRuleIds);
         }
     }
 
-    private static Task DisableRulesForFeed(
+    private static async Task DisableRulesForFeed(
         [FromBody] UpdateRulesForFeedRequest param,
         [FromServices] BangumiDb db)
     {
         // 禁用规则不影响已经生成的Group与BangumiItem
-        return db.EnabledRules
+        await db.EnabledRules
             .Where(e => e.FeedSourceId == param.FeedId)
             .Where(e => param.RuleIds.Contains(e.FeedRuleId))
             .ExecuteDeleteAsync();
+        await db.SaveChangesAsync();
     }
 }

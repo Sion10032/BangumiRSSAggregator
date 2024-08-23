@@ -161,6 +161,7 @@ public class RSSUpdater
         foreach (var group in processedItems)
         {
             var existGroup = groups.FirstOrDefault(it => it.Name == group.Key);
+            var existItems = new List<string>();
             if (existGroup == null)
             {
                 existGroup = new FeedGroup
@@ -175,10 +176,19 @@ public class RSSUpdater
                     FeedGroup = existGroup,
                 });
             }
+            else
+            {
+                existItems.AddRange(await _context.BangumiItems
+                    .Where(it => it.FeedGroupId == existGroup.Id)
+                    .Select(it => it.FeedItemId)
+                    .ToListAsync());
+            }
             await _context.BangumiItems.AddRangeAsync(group.Value
+                .Select(it => it.FeedItem.Id)
+                .Except(existItems)
                 .Select(it => new BangumiItem
                 {
-                    FeedItemId = it.FeedItem.Id,
+                    FeedItemId = it,
                     FeedGroup = existGroup,
                 })
                 .ToList());

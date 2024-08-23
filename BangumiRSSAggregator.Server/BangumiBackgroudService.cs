@@ -26,10 +26,12 @@ public class BangumiBackgroudService : BackgroundService
 
     public void EnqueueFetchAndUpdateAll()
     {
+        _logger.LogInformation($"Enqueue {nameof(EnqueueFetchAndUpdateAll)}.");
         _taskQueue.Enqueue(GetDefaultTask());
     }
     public void EnqueueFetchAndUpdate(int feedId)
     {
+        _logger.LogInformation($"Enqueue {nameof(EnqueueFetchAndUpdate)}, param: feedId-{feedId}.");
         _taskQueue.Enqueue((
             "FetchAndUpdate",
             async _ =>
@@ -38,6 +40,20 @@ public class BangumiBackgroudService : BackgroundService
 
                 // todo 添加日志
                 await rssUpdater.FetchAndUpdate(feedId);
+            }
+        ));
+    }
+    public void EnqueueApplyNewRule(int feedId, ICollection<int> ruleIds)
+    {
+        _logger.LogInformation($"Enqueue {nameof(EnqueueApplyNewRule)}, param: feedId-{feedId}, ruleIds: {string.Join(",", ruleIds)}.");
+        _taskQueue.Enqueue((
+            "EnqueueApplyNewRule",
+            async _ =>
+            {
+                var rssUpdater = _rssUpdateFactory.Invoke();
+
+                // todo 添加日志
+                await rssUpdater.ApplyNewRulesForFeed(feedId, ruleIds);
             }
         ));
     }

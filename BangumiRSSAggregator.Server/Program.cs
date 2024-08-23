@@ -38,7 +38,8 @@ builder.Services.AddTransient<Func<BangumiDb>>(ctx => () => ctx.GetService<Bangu
 builder.Services.AddTransient<RSSUpdater>();
 builder.Services.AddTransient<Func<RSSUpdater>>(ctx => () => ctx.GetService<RSSUpdater>()!);
 
-builder.Services.AddHostedService<BangumiBackgroudService>();
+builder.Services.AddSingleton<BangumiBackgroudService>();
+builder.Services.AddHostedService<BangumiBackgroudService>(provider => provider.GetService<BangumiBackgroudService>()!);
 
 var app = builder.Build();
 

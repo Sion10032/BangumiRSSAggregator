@@ -29,13 +29,14 @@ public static class GroupHandler
         return SetGroupStatus(db, param.GroupIds, false);
     }
 
-    private static Task<int> SetGroupStatus(
+    private static async Task<int> SetGroupStatus(
         BangumiDb db,
         ICollection<int> groupIds,
         bool status) 
     {
-        return db.FeedGroups
+        await db.FeedGroups
             .Where(e => groupIds.Contains(e.Id))
             .ExecuteUpdateAsync(s => s.SetProperty(e => e.Enabled, e => status));
+        return await db.SaveChangesAsync();
     }
 }
